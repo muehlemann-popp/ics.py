@@ -9,7 +9,7 @@ from ics.icalendar import Calendar
 from ics.event import Event
 from ics.todo import Todo
 
-from .fixture import cal1, cal2, cal10, cal12, cal14
+from .fixture import cal1, cal2, cal5, cal10, cal12, cal14
 
 
 class TestCalendar(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestCalendar(unittest.TestCase):
     fixtures = [cal1, cal10, cal12]
 
     def test_init(self):
-        c = Calendar(creator='tests')
+        c = Calendar(creator='tests', calname='myCalname')
         self.assertEqual(c.creator, 'tests')
         self.assertSequenceEqual(c.events, [])
         self.assertSequenceEqual(c.todos, [])
@@ -25,6 +25,7 @@ class TestCalendar(unittest.TestCase):
         self.assertEqual(c.scale, None)
         self.assertEqual(c._unused, Container(name='VCALENDAR'))
         self.assertEqual(c._timezones, {})
+        self.assertEqual(c.calname, 'myCalname')
 
     def test_selfload(self):
         for fix in self.fixtures:
@@ -154,6 +155,10 @@ class TestCalendar(unittest.TestCase):
 
         c.creator = u"apple_is_a_fruit"
         self.assertEqual(c.creator, u"apple_is_a_fruit")
+
+    def test_calname(self):
+        c = Calendar(cal1)
+        self.assertEqual(c.calname, u'plop')
 
     def test_scale(self):
 

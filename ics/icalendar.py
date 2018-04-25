@@ -31,7 +31,7 @@ class Calendar(Component):
     _EXTRACTORS = []
     _OUTPUTS = []
 
-    def __init__(self, imports=None, events=None, todos=None, creator=None):
+    def __init__(self, imports=None, events=None, todos=None, creator=None, calname=None):
         """Instantiates a new Calendar.
 
         Args:
@@ -50,7 +50,7 @@ class Calendar(Component):
         self._unused = Container(name='VCALENDAR')
         self.scale = None
         self.method = None
-
+        self.calname = calname
         self.timeline = Timeline(self)
 
         if imports is not None:
@@ -177,6 +177,13 @@ def scale(calendar, line):
         calendar.scale_params = {}
 
 
+@Calendar._extracts('X-WR-CALNAME')
+def calname(calendar, line):
+    name = line
+    if name:
+        calendar.calname = name.value
+
+
 @Calendar._extracts('METHOD')
 def method(calendar, line):
     method = line
@@ -261,3 +268,9 @@ def o_events(calendar, container):
 def o_todos(calendar, container):
     for todo in calendar.todos:
         container.append(str(todo))
+
+
+@Calendar._outputs
+def o_calname(calendar, container):
+    if calendar.calname is not None:
+        container.append(ContentLine('X-WR-CALNAME', value=calendar.calname))
